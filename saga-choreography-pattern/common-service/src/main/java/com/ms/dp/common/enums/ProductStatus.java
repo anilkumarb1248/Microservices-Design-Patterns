@@ -1,0 +1,9 @@
+package com.ms.dp.common.enums;
+
+public enum ProductStatus {
+	PRODUCTS_AVAILABLE, 
+	PRODUCTS_INSUFFICIENT, 
+	PRODUCTS_OUT_OF_STOCK,
+	PRODUCT_NOT_AVAILABLE,
+	PRODUCT_ROLLBACKED
+}

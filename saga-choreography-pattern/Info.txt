@@ -1,0 +1,131 @@
+--------------- Kafka Topics Creation -------------->
+order-event-topic
+product-event-topic
+payment-event-topic
+notify-event-topic
+order-completed-event-topic
+cancel-order-event-topic
+cancel-product-event-topic
+cancel-payment-event-topic
+
+--Setup & Starting the Servers
+https://www.javatpoint.com/installation-of-apache-kafka
+
+--Starting ZooKeeper Server (From Kafka Root Folder command prompt)
+zookeeper-server-start.bat config\zookeeper.properties
+
+Note: The ZooKeeper Server is throwing timeout error. So for that add below properties to zookeeper.properites file inside config folder.
+minSessionTimeout=100000000
+maxSessionTimeout=200000000
+
+-- Starting the Kafka Server(From Kafka Root Folder command prompt)
+kafka-server-start.bat config\server.properties
+Note: It is mandatory to start the zookeeper server first to run the Kafka commands.
+
+-- Creating the Topics
+	Update the ZooKeeper port and create the topics
+	To create the topics, just run the order-service. If it failed create manually
+	Note: It is better to create the topics manually (automatic created topics are not working properly while sending the data to Queue)
+
+kafka-topics --zookeeper localhost:2181 --create --topic order-event-topic --partitions 2 --replication-factor 1
+kafka-topics --zookeeper localhost:2181 --create --topic product-event-topic --partitions 2 --replication-factor 1
+kafka-topics --zookeeper localhost:2181 --create --topic payment-event-topic --partitions 2 --replication-factor 1
+kafka-topics --zookeeper localhost:2181 --create --topic notify-event-topic --partitions 2 --replication-factor 1
+kafka-topics --zookeeper localhost:2181 --create --topic order-completed-event-topic --partitions 2 --replication-factor 1
+kafka-topics --zookeeper localhost:2181 --create --topic cancel-order-event-topic --partitions 2 --replication-factor 1
+kafka-topics --zookeeper localhost:2181 --create --topic cancel-product-event-topic --partitions 2 --replication-factor 1
+kafka-topics --zookeeper localhost:2181 --create --topic cancel-payment-event-topic --partitions 2 --replication-factor 1
+
+--Note: Remove or Replace the .sh with .bat for windows
+-- To display all topics available in Kafka Cluster
+kafka-topics.sh --list --zookeeper localhost:2181
+kafka-topics.bat --list --zookeeper localhost:2181   (for windows)
+
+-- Command to display the details of all the topics in Kafka Cluster
+kafka-topics.sh --describe --zookeeper localhost:2181
+
+-- Command to display the details of a particular topic in Kafka Cluster
+kafka-topics.sh --describe --zookeeper localhost:2181  --topic order-event-topic
+
+-- To delete a topic from the Kafka Cluster
+kafka-topics.sh --zookeeper localhost:2181 --delete  --topic order-event-topic
+
+-- To write messages into the topics using kafka-console-producer.sh
+kafka-console-producer.sh --broker-list localhost:9092 --topic order-event-topic
+
+--- To consume the messages you just produced in console
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic order-event-topic
+
+<--------------- Kafka Topics Creation --------------
+
+-- Start all the applications
+
+The order-service application will start at port: 2000
+
+http://localhost:2000/order/getOrders/google
+http://localhost:2000/order/createOrder
+// Success Scenario
+{
+	"productId":10,
+	"userId":"google",
+	"addressId":10,
+	"quantity":2
+}
+
+// Failure Scenario
+{
+	"productId":50,
+	"userId":"microsoft",
+	"addressId":10,
+	"quantity":5
+}
+
+-- To Complete Order
+PUT: localhost:2003/shipment/delevery/4
+
+-- Using Embedded h2 database
+Access the h2 database console with the following URL
+http://localhost:2000/h2-console/
+URL = jdbc:h2:mem:ordersDB
+Username = sa
+Password = password
+
+-- All H2-Console URL's
+http://localhost:2000/h2-console/
+ordersDB
+
+http://localhost:2001/h2-console/
+productsDB
+
+http://localhost:2002/h2-console/
+paymentsDB
+
+http://localhost:2003/h2-console/
+shipmentDB
+
+
+
+----------- Default Static Data ------------
+INSERT INTO PRODUCT(PRODUCT_ID, PRODUCT_NAME, PRICE, AVAILABILITY_COUNT) VALUES
+	(10, 'Television', 1000, 25),
+	(20, 'Refrigerator', 2000, 20),
+	(30, 'Washing Machine', 3000, 15),
+	(40, 'Desktop', 4000, 10),
+	(50, 'Laptop', 5000, 5);
+	
+INSERT INTO USER(USER_ID, USER_NAME, AVAILABLE_AMOUNT) VALUES
+	('google', 'Google', 50000),
+	('amazon', 'Amazon', 40000),
+	('twitter', 'Twitter', 30000),
+	('apple', 'Apple', 20000),
+	('microsoft', 'Microsoft', 10000);
+
+
+INSERT INTO USER_ADDRESS(ADDRESS_ID, USER_ID, HOUSE_NUMBER,STREET, CITY, 
+STATE, ZIPCODE) VALUES
+	(10, 'google', '111', 'street1', 'city1', 'state1', '1010'),
+	(20, 'amazon', '222', 'street2', 'city2', 'state2', '2020'),
+	(30, 'twitter', '333', 'street3', 'city3', 'state3', '3030'),
+	(40, 'apple', '444', 'street4', 'city4', 'state4', '4040'),
+	(50, 'microsoft', '555', 'street5', 'city5', 'state5', '5050');
+	
